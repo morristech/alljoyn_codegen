@@ -1,0 +1,9 @@
+.gitignore
+.project
+.classpath
+.settings
+ajngen
+ajgen
+bin
+*.jar
+tmp
