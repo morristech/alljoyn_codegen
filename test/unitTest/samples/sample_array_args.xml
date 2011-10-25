@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+ Copyright 2010 - 2011, Qualcomm Innovation Center, Inc.
+	  
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+	  
+        http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<node name="/com/qcom/TypeTest" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
+	
+  <interface name="org.codeaurora.mbus.echoPing">
+
+    <method name="echo">
+      <arg type="ad" name="echo_struct" direction="in" />
+      <arg type="s" name="echo_string" direction="out" />
+      <arg type="ai" name="echo_int" direction="out" />
+      <arg type="d" name="echo_double" direction="out" />
+    </method>
+    
+    <method name="foo">
+      <arg type="ai" name="fooArg1" direction="in" />
+      <arg type="ai" name="fooArg2" direction="out" />
+    </method>
+
+    <signal name="ping">
+      <arg type="as" name="curr_ping_count"/>
+    </signal>
+    
+    <signal name="bar">
+      <arg type="ai" name="barArray"/>
+    </signal>
+
+  </interface>
+
+</node>

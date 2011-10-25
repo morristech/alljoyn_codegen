@@ -1,0 +1,12 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+
+<node>
+  <interface name="org.ayatana.dbusmenu">
+    <method name="GetGroupProperties">
+      <arg name="ids" type="ai" direction="in"/>
+      <arg name="propertyNames" type="as" direction="in"/>
+      <arg name="properties" type="a(ia{sd})" direction="out"/>
+    </method>
+  </interface>
+</node>

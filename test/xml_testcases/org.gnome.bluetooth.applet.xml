@@ -1,0 +1,76 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+
+<node>
+  <interface name="org.freedesktop.DBus.Introspectable">
+    <method name="Introspect">
+      <arg name="data" direction="out" type="s"/>
+    </method>
+  </interface>
+  <interface name="org.freedesktop.DBus.Properties">
+    <method name="Get">
+      <arg name="interface" direction="in" type="s"/>
+      <arg name="propname" direction="in" type="s"/>
+      <arg name="value" direction="out" type="v"/>
+    </method>
+    <method name="Set">
+      <arg name="interface" direction="in" type="s"/>
+      <arg name="propname" direction="in" type="s"/>
+      <arg name="value" direction="in" type="v"/>
+    </method>
+    <method name="GetAll">
+      <arg name="interface" direction="in" type="s"/>
+      <arg name="props" direction="out" type="a{sv}"/>
+    </method>
+  </interface>
+  <interface name="org.ayatana.dbusmenu">
+    <method name="AboutToShow">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="needUpdate" type="b" direction="out"/>
+    </method>
+    <method name="Event">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="eventId" type="s" direction="in"/>
+      <arg name="data" type="v" direction="in"/>
+      <arg name="timestamp" type="u" direction="in"/>
+    </method>
+    <method name="GetProperties">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="propertyNames" type="as" direction="in"/>
+      <arg name="properties" type="a{sv}" direction="out"/>
+    </method>
+    <method name="GetProperty">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="name" type="s" direction="in"/>
+      <arg name="value" type="v" direction="out"/>
+    </method>
+    <method name="GetChildren">
+      <arg name="id" type="i" direction="in"/>
+      <arg name="propertyNames" type="as" direction="in"/>
+      <arg name="properties" type="a(ia{sv})" direction="out"/>
+    </method>
+    <method name="GetGroupProperties">
+      <arg name="ids" type="ai" direction="in"/>
+      <arg name="propertyNames" type="as" direction="in"/>
+      <arg name="properties" type="a(ia{sv})" direction="out"/>
+    </method>
+    <method name="GetLayout">
+      <arg name="parentId" type="i" direction="in"/>
+      <arg name="revision" type="u" direction="out"/>
+      <arg name="layout" type="s" direction="out"/>
+    </method>
+    <signal name="LayoutUpdated">
+      <arg type="u"/>
+      <arg type="i"/>
+    </signal>
+    <signal name="ItemUpdated">
+      <arg type="u"/>
+    </signal>
+    <signal name="ItemPropertyUpdated">
+      <arg type="i"/>
+      <arg type="s"/>
+      <arg type="v"/>
+    </signal>
+    <property name="version" type="u" access="read"/>
+  </interface>
+</node>

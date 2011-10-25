@@ -1,0 +1,51 @@
+<!--
+ Copyright 2010 - 2011, Qualcomm Innovation Center, Inc.
+	  
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+	  
+        http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<node name="/org/freedesktop/sample_object">
+	<node name="/org/freedesktop/sample_object">
+		<interface name="com.example.MyObject">
+			<property name="another_prop" type="i" access="read"/>
+		</interface>
+	</node>
+	<interface name="org.freedesktop.SampleInterface">
+		<property name="SomeProp" type="y" access="write" />
+        <annotation name="org.alljoyn.Bus.Item.IsSecure" value="true"/>
+		<method name="Frobate">
+			<arg name="foo" type="i" direction="in" />
+			<arg name="bar" type="s" direction="out" />
+			<arg name="baz" type="a{us}" direction="out" />
+			<annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+		</method>
+		<signal name="BigSignal"/>
+		<method name="Bazify">
+			<arg name="bar" type="(iiu)" direction="in" />
+			<arg name="bar" type="v" direction="out" />
+            <annotation name="org.alljoyn.Bus.Item.IsSecure" value="true"/>
+		</method>
+		<method name="Mogrify">
+			<arg name="bar" type="(iiav)" direction="in" />
+		</method>
+		<signal name="Changed">
+			<arg name="new_value" type="b" />
+		</signal>
+		<property name="Bar" type="y" access="readwrite" />
+	</interface>
+	<node name="/org/freedesktop/sample_object">
+		<interface name="com.example.MyObject">
+			<signal name="some_signal"/>
+		</interface>
+	</node>
+</node>

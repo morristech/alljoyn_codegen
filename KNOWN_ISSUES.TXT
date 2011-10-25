@@ -1,0 +1,100 @@
+				 KNOWN ISSUES
+
+1 Multi-dimensional arrays are not supported and varient argument types 
+  have very limited support.
+
+  ajgen supports single dimentional but not multi-dimentional arrays.  i.e. 
+  an array of an array.
+  
+  Variants are only supported if they are the only element in the 
+  signature. Variants inside a container type are not supported.  Variants 
+  also require the use of the MsgArg library.
+
+2 The *ClientHandlers.cc file is generated even when there are no signals.
+
+3 Limited annotation support
+
+  Currently only two annotations are supported:
+    org.freedesktop.DBus.Method.NoReply
+      This causes the annotated method not to send a reply from the service
+      side, and for the client side not to wait for a reply.
+      
+    org.alljoyn.Bus.Item.IsSecure
+      This will mark the annotated item (currently only interfaces) as
+      secure.  This will cause signals to be authenticated and encrypted,
+      and require that method invocations be authenticated and encrypted.
+
+  All other annotations are ignored.
+
+4 Only Linux is supported
+
+  Currently the tool is only supported on Linux systems, and only generates
+  code that is executable on a Linux system.  It is possible that it may
+  work on other systems but that is not supported.
+
+5 Limited "runnable" support
+
+  The tool supports a feature where the generated code will be not only
+  build-able, but will actually be runnable (using the --runnable command
+  line flag).  This support is currently limited to supporting the
+  following:
+
+  1) Setting default values for all supported types, that is method
+     invocations will have all of their in parameters initialized before
+     the method is invoked.
+  2) Invoking all methods and signals as well as setting and getting all
+     properties. 
+  3) Printing a message when each of these events happen both in the client
+     and service applications.  For example, if a client invokes a method
+     foo(), the client application will generate output indicating that foo()
+     is being invoked.
+  4) All "in" arguments and "out" arguments are randomly assigned a valid value
+     for all data types. If a method is invoked it will print the values 
+     that were sent to it and print which values it is returning to the caller.
+     If no values were sent or no values are being returned nothing will be 
+     printed beyond the code indicating the method was invoked. 
+  5) Signals are sent from one of the method generated in the code. Signals 
+     will not be invoked if no methods are found in the XML.
+
+  It does not currently allow modification of the default values.
+  
+6 Variant type for "runnable"
+
+  Variants will be treated as an unsigned int array. For example a dictionary 
+  of variants is treated as just an unsigned int array and not as a dictionary
+  of unsigned int arrays.
+  
+7 Arguments and Properties cannot have the name "status"
+
+  Method and signal arguments as well as properties cannot be named "status"
+  because that is a local QStatus variable being used by the code.
+
+8 The -e Switch
+
+  If the XML contains no object and the -e switch is specified, no object
+  will be generated.
+
+9 There is no command line option to specify the Session Port
+
+  The session port is defined in BusAttachmentMgr.h with a default value of 42.
+  Developers must manually change this if they wish to use a different value.
+  
+  
+  Copyright © 2010-2011 Qualcomm Innovation Center, Inc.
+  This document is licensed under the Creative Commons Attribution-ShareAlike 
+  3.0 Unported License (the "CC BY-SA License"); provided,
+  that (i) any source code incorporated in this documentation is licensed
+           under the Apache License version 2.0
+  and (ii) THIS DOCUMENTATION AND ALL INFORMATION CONTAINED HEREIN ARE
+           PROVIDED ON AN "AS-IS" BASIS WITHOUT WARRANTY OF ANY KIND.
+
+  To view a copy of this license, visit
+
+     http://creativecommons.org/licenses/by-sa/3.0/
+
+  or send a letter to
+
+     Creative Commons
+     171 Second Street, Suite 300
+     San Francisco
+     California, 94105, USA

@@ -1,0 +1,39 @@
+			   INSTALLATION INSTRUCTIONS
+
+After extracting AllJoyn C++ Code Generator to the desired location, run the
+build.sh script.  This will create an executable named "ajgen" in the
+specified directory.
+
+    $sh build.sh [destination directory]
+
+If no directory is specified, the executable  will be placed in the current
+working directory.
+
+The usage of the tool can be found by simply running the tool without
+arguments:
+$./ajgen
+AllJoyn code-generation Tool
+ajgen -h | --help
+	Display this help
+...
+$
+
+
+  Copyright © 2010-2011 Qualcomm Innovation Center, Inc.
+  This document is licensed under the Creative Commons Attribution-ShareAlike 
+  3.0 Unported License (the "CC BY-SA License"); provided,
+  that (i) any source code incorporated in this documentation is licensed
+           under the Apache License version 2.0
+  and (ii) THIS DOCUMENTATION AND ALL INFORMATION CONTAINED HEREIN ARE
+           PROVIDED ON AN "AS-IS" BASIS WITHOUT WARRANTY OF ANY KIND.
+
+  To view a copy of this license, visit
+
+     http://creativecommons.org/licenses/by-sa/3.0/
+
+  or send a letter to
+
+     Creative Commons
+     171 Second Street, Suite 300
+     San Francisco
+     California, 94105, USA

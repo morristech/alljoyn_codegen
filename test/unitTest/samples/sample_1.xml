@@ -1,0 +1,67 @@
+<!--
+ Copyright 2010 - 2011, Qualcomm Innovation Center, Inc.
+	  
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+	  
+        http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<node name="/com/qcom/TypeTest">
+  <interface name="org.freedesktop.DBus.Introspectable">
+    <method name="Introspect">
+      <arg name="data" direction="out" type="s"/>
+    </method>
+  </interface>
+  <interface name="org.freedesktop.DBus.Properties">
+    <method name="Get">
+      <arg name="interface" direction="in" type="s"/>
+      <arg name="propname" direction="in" type="s"/>
+      <arg name="value" direction="out" type="v"/>
+    </method>
+    <method name="Set">
+      <arg name="interface" direction="in" type="s"/>
+      <arg name="propname" direction="in" type="s"/>
+      <arg name="value" direction="in" type="v"/>
+    </method>
+    <method name="GetAll">
+      <arg name="interface" direction="in" type="s"/>
+      <arg name="props" direction="out" type="a{sv}"/>
+    </method>
+  </interface>
+  <interface name="com.example.SampleInterface">
+    <method name="foo">
+	<arg name="name" direction="in" type="(ib)"/>
+	<arg name="number" direction="in" type="b"/>
+	<arg name="output" direction="out" type="i"/>
+    <arg name="address" direction="out" type="(ib)"/>
+    </method>
+    <method name="bar">
+	<arg name="barArg" direction="in" type="s"/>
+	<arg name="barOut" direction="out" type="b"/>
+    <arg name="barInt" direction="out" type="i"/>
+    </method>
+    <method name="Exit">
+    </method>
+    <signal name="TestSignal">
+	<arg name="testBool" type="b"/>
+    <arg name="testInt" type="i"/>
+    </signal>
+    <signal name="ping">
+      <arg type="a{ii}" name="curr_ping_count"/>
+    </signal>
+    <signal name="pong">
+      <arg type="ai" name="curr_pong_count"/>
+    </signal>
+    <property name="prop1" type="i" access="readwrite" />
+    <property name="prop2" type="i" access="read" />
+    <property name="prop3" type="i" access="write" />
+  </interface>
+</node>

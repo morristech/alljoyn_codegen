@@ -1,0 +1,37 @@
+ -w  | --well-known-name <well_known_name> 
+	[-u | --user-output {fweid}] [-l | --lax-naming]
+	[-p | --output-path <path>] [-o | --overwrite] [-c | --client-only]
+	[-b | --object-path <object_path>]
+	[-e | --empty-elements] [-R | --runnable] [<xml_file>]+ 
+
+  -w:	The well-known name that the interface will use when requesting a bus
+	name or advertising a name.
+  -u:   Sets the logging level to 
+		f - fatal
+		w - warning
+		e - error
+		i - inform
+		d - detail
+  -l:	Relaxes the requirement that all method and signal arguments be
+	named.  If specified, default names will be generated for arguments.
+  -p:	The path where the generated C++ files will be placed. If not specified,
+	they will be output in the current working directory.
+  -o:	Overwrite non-developer files if they exist in the output
+	directory. If specified, the codegen tool will overwrite
+	existing files except for files that may contain developer code. The
+	tool will create a copy of those files instead. Copies that already
+	exist will be overwritten.
+  -c:	Only generate the client side code; if not specified, both the client
+	and service code are generated.
+  -b:	The object path (including name) of the object being defined in the xml_file(s).  If
+	the xml_file(s) contain the object path and it does not match obj_path,
+	the tool will exit with an error. If the name is not defined either in the XML or 
+	using this flag, the tool will also exit with an error.
+  -e:	Will allow empty elements (i.e. objects and interfaces) to be defined
+	in the xml_file(s). If not specified, empty elements will cause the
+	tool to exit with an error.
+  -R:	The generated client executable will make method calls with default
+	values and the service method handlers will reply with default values.
+	This option requires a valid object path to be specified (i.e. -r).
+xml_file: One or more files containing the xml definition of an object's
+	interface(s).
