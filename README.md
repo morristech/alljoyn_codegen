@@ -31,7 +31,8 @@ opportunity to extend and improve it.  It comes with its own unit-testing
 framework and extensive collection of unit test input XML files, which can serve
 as examples.
 
-Instructions on how to download the source are found at the AllJoyn Github site.
+Instructions on how to download the source are found at the AllJoyn Github site,
+https://github.com/alljoyn/alljoyn_codegen
 
 We hope this tool is a useful addition to your development environment.  Enjoy!
 
