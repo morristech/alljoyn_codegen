@@ -28,7 +28,8 @@ your learning and using the AllJoyn concepts.
 
 Because the Code Generator is being released as Open Source, you also have the
 opportunity to extend and improve it.  It comes with its own unit-testing 
-framework and generous collection of sample XML input files.
+framework and extensive collection of unit test input XML files, which can serve
+as examples.
 
 Instructions on how to download the source are found at the AllJoyn Github site.
 
