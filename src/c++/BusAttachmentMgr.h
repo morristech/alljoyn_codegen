@@ -20,8 +20,6 @@
 #include <alljoyn/AllJoynStd.h>
 #include <alljoyn/Session.h>
 
-using namespace std;
-using namespace qcc;
 using namespace ajn;
 
 /* forward declaration */
@@ -104,7 +102,7 @@ class MyBusListener : public BusListener, public SessionPortListener, public Ses
 
   public :
 
-    MyBusListener(BusAttachment &bus, String name);
+    MyBusListener(BusAttachment &bus, qcc::String name);
 
     void FoundAdvertisedName(const char* name, TransportMask transport, const char* namePrefix);
     
@@ -115,7 +113,7 @@ class MyBusListener : public BusListener, public SessionPortListener, public Ses
     void SessionJoined(SessionPort sessionPort, SessionId id, const char* joiner);
     
     BusAttachment *myBusAttachment;
-    String advertizedName;
+    qcc::String advertizedName;
     bool nameFound;
     SessionId mySessionID;
     /* SESSION_PORT can be set to any number from 1 to 0xFFFF */

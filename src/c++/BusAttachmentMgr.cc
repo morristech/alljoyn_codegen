@@ -175,7 +175,7 @@ bool BusAttachmentMgr::DiscoveryEnabled(){
 } /* DiscoveryEnabled() */
 
 
-MyBusListener::MyBusListener(BusAttachment &bus, String name):
+MyBusListener::MyBusListener(BusAttachment &bus, qcc::String name):
         advertizedName(name),
         nameFound(false)
 {

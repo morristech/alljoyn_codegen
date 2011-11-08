@@ -59,7 +59,7 @@ class GenerateRunnableCode {
                                                           true,
                                                           tempMeth.getName());
             output += WriteCode.indentDepth 
-                + objName + "."
+                + objName + "->"
                 + tempMeth.getName() 
                 + "(";
 			
@@ -218,7 +218,7 @@ class GenerateRunnableCode {
                                                   1);
             //make the SetProperty call
             output += String.format(
-                "%sstatus = (%s.proxyBusObj)->SetProperty(\"%s\", \"%s\", %sSetVal);\n",
+                "%sstatus = (%s->proxyBusObj)->SetProperty(\"%s\", \"%s\", %sSetVal);\n",
                 FormatCode.indent(1),
                 objName,
                 iface,
@@ -239,7 +239,7 @@ class GenerateRunnableCode {
                  argNames.put(prop.getName() + "GetVal", true);
             }
             output += String.format(
-                "%sstatus = (%s.proxyBusObj)->GetProperty(\"%s\", \"%s\", %sGetVal);\n",
+                "%sstatus = (%s->proxyBusObj)->GetProperty(\"%s\", \"%s\", %sGetVal);\n",
                 FormatCode.indent(1),
                 objName,
                 iface,

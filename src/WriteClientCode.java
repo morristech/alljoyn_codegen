@@ -80,6 +80,7 @@ class WriteClientCode extends WriteCode{
         writeCCComent();
         writeCCIncludes();
         writeConstructor();
+        writeDestructor();
         writeMethodWrappers();
         writeSignalHandlerWrappers();
         writeRegisterSignal();
@@ -198,9 +199,10 @@ class WriteClientCode extends WriteCode{
                 className = obj.inter.getName();
             }
             className += "Client";
-            code = String.format("%s %s(*AllJoynMgr->GetBusAttachment(),", 
+            code = String.format("%s* %s = new %s(*AllJoynMgr->GetBusAttachment(),", 
                         className,
-            		obj.objName);
+            		obj.objName,
+                        className);
             output += FormatCode.indentln(code, 1);
             code = "*AllJoynMgr->GetBusListener(),";
             output += FormatCode.indentln(code, 2);  
@@ -213,10 +215,10 @@ class WriteClientCode extends WriteCode{
         output += FormatCode.comment("Start the BusAttachment for the client", 1); 
         output += FormatCode.indentln("AllJoynMgr->StartClient();\n", 1);
 
-        code = String.format("status = %s.FindName();", config.objects.get(0).objName);
+        code = String.format("status = %s->FindName();", config.objects.get(0).objName);
         output += FormatCode.indentln(code, 1);
         output += FormatCode.indentln("if (ER_OK != status){", 1);
-        output += FormatCode.indentln("printf(\"%s.FindName failed\\n\", ajn::org::alljoyn::Bus::InterfaceName);", 2); 
+        output += FormatCode.indentln("printf(\"%s->FindName failed\\n\", ajn::org::alljoyn::Bus::InterfaceName);", 2); 
         output += FormatCode.indentln("}", 1);
         output += FormatCode.indentln("else{", 1);
         commentStr = "It may take a while for a remote service to be found. " +
@@ -229,7 +231,7 @@ class WriteClientCode extends WriteCode{
         	"Modify this loop to increase or decrease the wait time.";
         output += FormatCode.blockComment(commentStr, 2);
         output += FormatCode.indentln("for(int i = 0; i < 100; i++){", 2);
-        code = String.format("if(!%s.NameFound()){", config.objects.get(0).objName);
+        code = String.format("if(!%s->NameFound()){", config.objects.get(0).objName);
         output += FormatCode.indentln(code, 3);
         output += FormatCode.indentln("usleep(100);", 4);
         output += FormatCode.indentln("}",3);
@@ -243,12 +245,13 @@ class WriteClientCode extends WriteCode{
                                      obj.objName, obj.objPath);
                 output += FormatCode.indentln(code, 1);
             }
-            code = String.format("status = %s.SetUpProxy();", obj.objName);
+            code = String.format("status = %s->SetUpProxy();", obj.objName);
             output += FormatCode.indentln(code, 1);
             output += FormatCode.indentln("if(status != ER_OK){", 1);
             code = String.format("printf(\"%s", obj.objName);
-            code += ".SetUpProxy() failed: %s\\n\", QCC_StatusText(status));";
+            code += "->SetUpProxy() failed: %s\\n\", QCC_StatusText(status));";
             output += FormatCode.indentln(code, 2); 
+            output += String.format("%sdelete %s;\n", FormatCode.indent(2), obj.objName);
             output += FormatCode.indentln("AllJoynMgr->Delete();", 2); 
             output += FormatCode.indentln("return (int) status;", 2); 
             output += FormatCode.indentln("}\n", 1);
@@ -262,7 +265,7 @@ class WriteClientCode extends WriteCode{
         				"this call if you want to ignore the signal",
         				tempSig.getName());
         		output += FormatCode.comment(commentStr, 1);
-        		output += String.format("%s%s.Register%sHandler();\n\n",
+        		output += String.format("%s%s->Register%sHandler();\n\n",
         				FormatCode.indent(1),
         				obj.objName,
         				tempSig.getName());
@@ -301,7 +304,15 @@ class WriteClientCode extends WriteCode{
                 }
             }
         }
-
+        writeCode(output);
+        output = "";
+        output += "\n";
+        for(ObjectData obj : config.objects) {
+            output += String.format("%sif(%s != NULL) {\n", FormatCode.indent(1), obj.objName);
+            output += String.format("%sdelete %s;\n", FormatCode.indent(2), obj.objName);
+            output += String.format("%s}\n", FormatCode.indent(1));
+            
+        }
         output += "\n";
         output += FormatCode.indentln("fflush(stdout);\n", 1);
         output += FormatCode.comment("Stop and deallocate the BusAttachment", 1);
@@ -335,13 +346,23 @@ class WriteClientCode extends WriteCode{
                                    "object you are trying to connect with.", 
                                    objName,
                                    objName);
-        output += FormatCode.blockComment(commentStr, 2);
-        
+        output += FormatCode.blockComment(commentStr, 2);        
         code = String.format(
             "%s(BusAttachment &bus, MyBusListener &busListener, " +
             "const char *endpoint, const char* path);\n",
             objName);
         output += FormatCode.indentln(code, 2);
+
+        writeCode(output);
+
+        output = "";
+        commentStr = String.format("METHOD: ~%1$s()\n" +
+                        "Destructor for %1$s.", objName);
+        output += FormatCode.blockComment(commentStr, 2);
+        code = String.format("~%s();\n", objName);
+        output += FormatCode.indentln(code, 2);
+        
+
         ArrayList<MethodDef> tempMethodList;
         ArrayList<SignalDef> tempSignalList;
         MethodDef tempMethod;
@@ -581,6 +602,34 @@ class WriteClientCode extends WriteCode{
         output += "\n";
         output += "} /* "
             + objName
+            + "() */\n\n";
+        writeCode(output);
+    }
+
+    private void writeDestructor(){
+        String output = "";
+        String commentStr;
+        String code;
+
+        commentStr = String.format("METHOD: ~%1$s()\n" +
+                        "Destructor for %1$s.", objName);
+        output += FormatCode.blockComment(commentStr, 0);
+        
+        output += objName
+            + "::~"
+            + objName
+            + "(){\n";
+        output += indentDepth
+            + "if(proxyBusObj != NULL){\n"
+            + indentDepth
+            + indentDepth
+            + "delete proxyBusObj;\n"
+            + indentDepth
+            + "}";
+
+        output += "\n";
+        output += "} /* "
+            + "~" + objName
             + "() */\n\n";
         writeCode(output);
     }

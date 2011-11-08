@@ -309,9 +309,7 @@ public class WriteCode {
         }
 
         includes += "#include <Status.h>\n"
-            + "\n\nusing namespace ajn;\n"
-            + "using namespace qcc;\n"
-            + "using namespace std;\n\n";
+              + "\n\nusing namespace ajn;\n\n";
 
         writeCode(includes);
     } // writeHeaderIncludes()
@@ -324,9 +322,8 @@ public class WriteCode {
             + objName
             + ".h\"\n"
             + "#include <alljoyn/AllJoynStd.h>\n\n"
-            + "using namespace ajn;\n"
-            + "using namespace qcc;\n"
-            + "using namespace std;\n\n";
+            + "using namespace ajn;\n\n";
+
     	writeCode(output);
     } // writeCCIncludes()
 
@@ -415,9 +412,11 @@ public class WriteCode {
 
         for(int i = 0; i < iface.signals.size(); i++){
             tempSignal = iface.signals.get(i);
-            output += "/* add the "
+            output += indentDepth
+                + "/* add the "
                 + tempSignal.getName()
                 + " signal to the interface */\n"
+                + indentDepth
                 + indentDepth;
             output += "status = "
                 + varName
@@ -445,9 +444,11 @@ public class WriteCode {
         
         for(int i = 0; i < iface.properties.size(); i++){
             tempProp = iface.properties.get(i);
-            output += "/* add the "
+            output += indentDepth
+                + "/* add the "
                 + tempProp.getName()
                 + " property to the interface */\n"
+                + indentDepth
                 + indentDepth;
             output += "status = "
                 + varName
@@ -515,13 +516,13 @@ public class WriteCode {
             type = "double";
             break;
     	case 'o':
-            type = "String";
+            type = "qcc::String";
             break;
     	case 'g':
-            type = "String";
+            type = "qcc::String";
             break;
     	case 's':
-            type = "String";
+            type = "qcc::String";
             break;
     	default:
             type = "nonBasic";    		
@@ -624,13 +625,13 @@ public class WriteCode {
             type = "double&";
             break;
     	case 'o':
-            type = "String&";
+            type = "qcc::String&";
             break;
     	case 'g':
-            type = "String&";
+            type = "qcc::String&";
             break;
     	case 's':
-            type = "String&";
+            type = "qcc::String&";
             break;
     	default:
             type = "nonBasic";
@@ -3761,7 +3762,7 @@ public class WriteCode {
                                     signature,
                                     varName);
             if(generateOutVar){
-            	code = String.format("String * %1$s = new String[%1$sNumElements];", varName);
+            	code = String.format("qcc::String * %1$s = new qcc::String[%1$sNumElements];", varName);
             	output += FormatCode.indentln(code, indentDepth);
             }
             output += String.format(
