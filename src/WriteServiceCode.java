@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2010 - 2011, Qualcomm Innovation Center, Inc.
+ * Copyright 2010 - 2011, 2013 Qualcomm Innovation Center, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -215,15 +215,11 @@ class WriteServiceCode extends WriteCode{
         writeCode(output);
         output = "";
         commentStr = "Register the service object with the bus and start the " +
-        		"service. If there are multiple services that are going to " +
-        		"be hosted out of this application then calls to " +
-        		"RegisterBusObject should be made for each service object " +
-        		"BEFORE calling StartService(). Once the service has been " +
-        		"stopped clean up by calling Delete().\n" +
-        		"\n" +
-        		"The StartService() method will block until the service is " +
-        		"stopped (e.g. it is terminated externally or via an AllJoyn " +
-        		"call).";
+                     "service. If there are multiple services that are going to " +
+                     "be hosted out of this application then calls to " +
+                     "RegisterBusObject should be made for each service object " +
+                     "BEFORE calling StartService(). Once the interrupt signal" +
+                     "has been received clean up by calling Delete().";
         output += FormatCode.blockComment(commentStr, 1);
         for(ObjectData obj : config.objects) {
             code = String.format(
@@ -235,7 +231,10 @@ class WriteServiceCode extends WriteCode{
         code = String.format("status = AllJoynMgr->StartService(\"%s\");\n", config.wellKnownName);
         output += FormatCode.indentln(code, 1); 
 
-        output += FormatCode.indentln("AllJoynMgr->Delete();\n", 1); 
+        output += FormatCode.indentln("AllJoynMgr->WaitForSigInt();\n", 1);
+        output += FormatCode.indentln("AllJoynMgr->Delete();", 1);
+        output += FormatCode.indentln("delete AllJoynMgr;", 1);
+        output += FormatCode.indentln("AllJoynMgr = NULL;\n", 1);
         output += FormatCode.indentln("return (int) status;", 1);
         output += "} /* main() */\n";
 		
@@ -488,15 +487,13 @@ class WriteServiceCode extends WriteCode{
         output += String.format("%1$s::%1$s(BusAttachment &bus, MyBusListener &busListener, const char* path)\n",
                         objName);
 
-        output += FormatCode.indentln(": BusObject(bus, path, false)", 1);
+        output += FormatCode.indentln(": BusObject(path, false)", 1);
         output += "{\n"
             + indentDepth;
         output += "myBusAttachment = &bus;\n"
             + indentDepth;
 
-        output += "myBusListener = &busListener;\n"
-            + indentDepth;
-        output += "QStatus status = ER_OK;\n\n"
+        output += "myBusListener = &busListener;\n\n"
             + indentDepth;
 
         output += "/* This is where the developer should initialize any"
@@ -554,14 +551,14 @@ class WriteServiceCode extends WriteCode{
                     + " interface according to the XML file */\n"
                     + indentDepth
                     + indentDepth;
-                output += "status = bus.CreateInterface(\""
+                output += "bus.CreateInterface(\""
                     + curInterface.getFullName()
                     + "\", "
                     + "createIface"
                     + ", true);\n"
                     + indentDepth;
             }else{
-                output += "status = bus.CreateInterface(\""
+                output += "bus.CreateInterface(\""
                     + curInterface.getFullName()
                     + "\", "
                     + "createIface"
@@ -882,11 +879,11 @@ class WriteServiceCode extends WriteCode{
                         + ", const char* destination){\n"
                         + indentDepth;
                 }
-             output += "/* get the interfaceDescription member of the "
+                output += "/* get the interfaceDescription member of the "
                     + sigName
                     + " signal */\n"
                     + indentDepth;
-                output += "const InterfaceDescription* iface = bus."
+                output += "const InterfaceDescription* iface = myBusAttachment->"
                     + "GetInterface(\""
                     + WriteCode.getInterfaceBySignal(sigName)
                     + "\");\n"

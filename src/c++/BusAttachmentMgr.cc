@@ -5,6 +5,7 @@
  * This file contains implementation of the BusAttachmentMgr class.
  *
  *****************************************************************************/
+#include <signal.h>
 #include "BusAttachmentMgr.h"
 #include <alljoyn/AllJoynStd.h>
 #include <alljoyn/DBusStd.h>
@@ -95,8 +96,7 @@ QStatus BusAttachmentMgr::StartClient() {
 
 /*-----------------------------------------------------------------------------
   METHOD: StartService()
-  Uses StartClient() to connect to the bus, then blocks until the service is
-  stopped
+  Uses StartClient() to connect to the bus.
 -----------------------------------------------------------------------------*/
 QStatus BusAttachmentMgr::StartService(const char* advertisedName) {
 
@@ -124,8 +124,6 @@ QStatus BusAttachmentMgr::StartService(const char* advertisedName) {
         }
     }
 
-    myBusAttachment->WaitStop();
-
     return status;
 
 } /* StartService() */
@@ -137,8 +135,15 @@ QStatus BusAttachmentMgr::StartService(const char* advertisedName) {
 QStatus BusAttachmentMgr::Stop() {
     QStatus status = ER_OK;
 
-    status = myBusAttachment->Stop(false);
-    if (ER_OK != status) {
+    status = myBusAttachment->Stop();
+    if (ER_OK == status) {
+        /* The join will block until all threads have completed. */
+        status = myBusAttachment->Join();
+
+        if (ER_OK != status) {
+            printf("BusAttachment::Join() failed\n");
+        }
+    } else {
         printf("BusAttachment::Stop() failed\n");
     }
 
@@ -174,6 +179,35 @@ bool BusAttachmentMgr::DiscoveryEnabled(){
     return discoveryEnabled;
 } /* DiscoveryEnabled() */
 
+static volatile sig_atomic_t s_interrupt = false;
+static bool s_handlerInstalled = false;
+
+static void SigIntHandler(int sig)
+{
+    s_interrupt = true;
+}
+
+/*-------------------------------------------------------------------------
+  METHOD: WaitForSigInt()
+  Wait for the interrupt signal.
+-------------------------------------------------------------------------*/
+void BusAttachmentMgr::WaitForSigInt(void)
+{
+    if(!s_handlerInstalled) {
+        s_handlerInstalled = true;
+
+        /* Install SIGINT handler */
+        signal(SIGINT, SigIntHandler);
+    }
+
+    while (s_interrupt == false) {
+#ifdef _WIN32
+        Sleep(100);
+#else
+        usleep(100 * 1000);
+#endif
+    }
+}
 
 MyBusListener::MyBusListener(BusAttachment &bus, qcc::String name):
         advertizedName(name),
@@ -187,11 +221,14 @@ void MyBusListener::FoundAdvertisedName(const char* name, TransportMask transpor
 {
     printf("Discovered Advertised Name: \"%s\"\n", name);
 
+    /* Since we are in a callback we must enable concurrent callbacks before calling a synchronous method. */
+    myBusAttachment->EnableConcurrentCallbacks();
+
     /* Join the Session */
     SessionOpts opts(SessionOpts::TRAFFIC_MESSAGES, true, SessionOpts::PROXIMITY_ANY, TRANSPORT_ANY);
     QStatus status = myBusAttachment->JoinSession(name, SESSION_PORT, this, mySessionID, opts);
     if (ER_OK == status) {
-        printf("Joined Session \"%s\" with SessionID %d \n", name, mySessionID);
+        printf("Joined Session \"%s\" with SessionID 0x%x\n", name, mySessionID);
         nameFound = true;
     } else {
         printf("JoinSession failed (status=%s)\n", QCC_StatusText(status));

@@ -9,7 +9,7 @@
  * functions that makes very basic interactions with the BusAttachment class
  * easier. The class has methods that handles start, stop, delete, and
  * registering a busObject on the bus. This class only handles the minimal
- * interaction with quicBus, advanced developers should try to understand the
+ * interaction with AllJoyn, advanced developers should try to understand the
  * BusAttachment class in order to use its more advanced features.
  * 
  ******************************************************************************/
@@ -81,10 +81,16 @@ class BusAttachmentMgr {
     void Delete();
 
     /*-------------------------------------------------------------------------
-      METHOD: Delete()
-      find out if global discovery has been enabled.
+      METHOD: DiscoveryEnabled()
+      Find out if global discovery has been enabled.
     -------------------------------------------------------------------------*/
     bool DiscoveryEnabled();
+
+    /*-------------------------------------------------------------------------
+      METHOD: WaitForSigInt()
+      Wait for the interrupt signal.
+    -------------------------------------------------------------------------*/
+    void WaitForSigInt(void);
 
   private:
     /*-------------------------------------------------------------------------
@@ -117,7 +123,7 @@ class MyBusListener : public BusListener, public SessionPortListener, public Ses
     bool nameFound;
     SessionId mySessionID;
     /* SESSION_PORT can be set to any number from 1 to 0xFFFF */
-    static const SessionPort SESSION_PORT = 42;
+    static const SessionPort SESSION_PORT = 24;
 };
 
 #endif /* _BUS_ATTACHMENT_MGR_H */

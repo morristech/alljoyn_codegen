@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2010 - 2011, Qualcomm Innovation Center, Inc.
+ * Copyright 2010 - 2011, 2013 Qualcomm Innovation Center, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -230,11 +230,13 @@ class WriteClientCode extends WriteCode{
         	"calling the BusAttachmentMgr to false.\n" +
         	"Modify this loop to increase or decrease the wait time.";
         output += FormatCode.blockComment(commentStr, 2);
-        output += FormatCode.indentln("for(int i = 0; i < 100; i++){", 2);
-        code = String.format("if(!%s->NameFound()){", config.objects.get(0).objName);
-        output += FormatCode.indentln(code, 3);
-        output += FormatCode.indentln("usleep(100);", 4);
-        output += FormatCode.indentln("}",3);
+        code = String.format("for(int i = 0; !%s->NameFound() && i < 50; i++){", config.objects.get(0).objName);
+        output += FormatCode.indentln(code, 2);
+        output += FormatCode.indentln("#ifdef _WIN32", 0);
+        output += FormatCode.indentln("Sleep(100);", 3);
+        output += FormatCode.indentln("#else", 0);
+        output += FormatCode.indentln("usleep(100 * 1000);", 3);
+        output += FormatCode.indentln("#endif", 0);
         output += FormatCode.indentln("}",2);
         output += FormatCode.indentln("}\n",1);
 
@@ -252,7 +254,7 @@ class WriteClientCode extends WriteCode{
             code += "->SetUpProxy() failed: %s\\n\", QCC_StatusText(status));";
             output += FormatCode.indentln(code, 2); 
             output += String.format("%sdelete %s;\n", FormatCode.indent(2), obj.objName);
-            output += FormatCode.indentln("AllJoynMgr->Delete();", 2); 
+            output += FormatCode.indentln("AllJoynMgr->Delete();", 2);
             output += FormatCode.indentln("return (int) status;", 2); 
             output += FormatCode.indentln("}\n", 1);
         }
@@ -316,7 +318,9 @@ class WriteClientCode extends WriteCode{
         output += "\n";
         output += FormatCode.indentln("fflush(stdout);\n", 1);
         output += FormatCode.comment("Stop and deallocate the BusAttachment", 1);
-        output += FormatCode.indentln("AllJoynMgr->Delete();\n", 1); 
+        output += FormatCode.indentln("AllJoynMgr->Delete();", 1);
+        output += FormatCode.indentln("delete AllJoynMgr;", 1);
+        output += FormatCode.indentln("AllJoynMgr = NULL;\n", 1);
         output += FormatCode.indentln("return (int) status;", 1);
         output += "} /* main() */\n";
         writeCode(output);
@@ -584,7 +588,7 @@ class WriteClientCode extends WriteCode{
             + "(BusAttachment &bus, MyBusListener &busListener, "
             + "const char *endpoint, const char* path)\n";
         
-        output += FormatCode.indentln(": BusObject(bus, path, false)", 1);
+        output += FormatCode.indentln(": BusObject(path, false)", 1);
         
         output += "{\n" 
             + indentDepth;
@@ -1115,7 +1119,7 @@ class WriteClientCode extends WriteCode{
     	String commentStr = licenseTextOnly();
     	commentStr += String.format(
             "%s\n" +
-            "This file contains empty singnal handler where the developer " +
+            "This file contains empty signal handler where the developer " +
             "may choose to fill in his/her own signal handler implementation.",
             fileName);
     	output += FormatCode.blockComment(commentStr);    	
@@ -1232,7 +1236,7 @@ class WriteClientCode extends WriteCode{
             }
             output += indentDepth
                 + "getIface "
-                + " = bus.GetInterface(\""
+                + " = myBusAttachment->GetInterface(\""
                 + curInterface.getFullName()
                 + "\""
                 + ");\n"
@@ -1250,14 +1254,14 @@ class WriteClientCode extends WriteCode{
                     + " interface according to the XML file */\n" 
                     + indentDepth
                     + indentDepth;
-                output += "status = bus.CreateInterface(\"" 
+                output += "status = myBusAttachment->CreateInterface(\""
                     + curInterface.getFullName() 
                     + "\", " 
                     + "createIface"
                     + ", true);\n" 
                     + indentDepth;        		
             }else{
-                output += "status = bus.CreateInterface(\"" 
+                output += "status = myBusAttachment->CreateInterface(\""
                     + curInterface.getFullName() 
                     + "\", " 
                     + "createIface"

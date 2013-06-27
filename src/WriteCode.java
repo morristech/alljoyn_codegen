@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2010 - 2011, Qualcomm Innovation Center, Inc.
+ * Copyright 2010 - 2011, 2013 Qualcomm Innovation Center, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -112,14 +112,22 @@ public class WriteCode {
     } // writeBusMgrFile()
 
     /**
-     * Writes the sample makefile.
+     * Writes the sample makefiles.
      */
-    public void writeMakeFile(){
-    	InputStream s = this.getClass().getResourceAsStream("src/c++/makefile");
-    	File f = new File(config.outputPath + "makefile");
+    public void writeMakeFiles(){
+        writeMakeFile("makefile", "o");
+        writeMakeFile("makefile.nmake", "obj");
+    }
+
+    /**
+     * Writes a sample makefile.
+     */
+    private void writeMakeFile(String makefileName, String suffix){
+        InputStream s = this.getClass().getResourceAsStream("src/c++/" + makefileName);
+        File f = new File(config.outputPath + makefileName);
     	try {
             if(f.exists()){
-                UIOutput.LogWarning("makefile already exists.");
+                UIOutput.LogWarning(makefileName + " already exists.");
             }
             else{
                 FileOutputStream fs = new FileOutputStream(f);
@@ -132,7 +140,8 @@ public class WriteCode {
                 if(!config.clientOnly){
                     variables += "SERVICE_GENERATED = true\n";
                 }
-                variables += "SVCOBJS = BusAttachmentMgr.o ServiceMain.o ";
+                variables += "SVCOBJS = BusAttachmentMgr." + suffix +
+                             " ServiceMain." + suffix + " ";
                 for(InterfaceDescription tempInter : config.interfaces){ 
                     String className = "";
                     if(ParseAJXML.useFullNames) {
@@ -141,12 +150,13 @@ public class WriteCode {
                     else {
                         className = tempInter.getName();
                     }
-                    variables += className + "Service.o "
-                        + className + "ServiceMethods.o ";
+                    variables += className + "Service." + suffix + " "
+                        + className + "ServiceMethods." + suffix + " ";
                 }
                 variables += "\n";
 
-                variables += "CLTOBJS = BusAttachmentMgr.o ClientMain.o ";
+                variables += "CLTOBJS = BusAttachmentMgr." + suffix +
+                             " ClientMain." + suffix + " ";
                 for(InterfaceDescription tempInter : config.interfaces){
                    String className = "";
                     if(ParseAJXML.useFullNames) {
@@ -155,8 +165,8 @@ public class WriteCode {
                     else {
                         className = tempInter.getName();
                     }
-                    variables += className + "Client.o "
-                        + className + "ClientHandlers.o ";
+                    variables += className + "Client." + suffix + " "
+                        + className + "ClientHandlers." + suffix + " ";
                 }
                 variables += "\n";
 
@@ -308,7 +318,7 @@ public class WriteCode {
             includes += "#include <alljoyn/ProxyBusObject.h>\n";
         }
 
-        includes += "#include <Status.h>\n"
+        includes += "#include <alljoyn/Status.h>\n"
               + "\n\nusing namespace ajn;\n\n";
 
         writeCode(includes);
@@ -359,8 +369,7 @@ public class WriteCode {
                 + " method to the interface */\n"
                 + indentDepth
                 + indentDepth;
-            output += "status = "
-                + varName
+            output += varName
                 + "->AddMethod(\""
                 + tempMethod.getName()
                 + "\", ";
@@ -418,8 +427,7 @@ public class WriteCode {
                 + " signal to the interface */\n"
                 + indentDepth
                 + indentDepth;
-            output += "status = "
-                + varName
+            output += varName
                 + "->AddSignal(\""
                 + tempSignal.getName()
                 + "\", ";
@@ -450,8 +458,7 @@ public class WriteCode {
                 + " property to the interface */\n"
                 + indentDepth
                 + indentDepth;
-            output += "status = "
-                + varName
+            output += varName
                 + "->AddProperty(\""
                 + tempProp.getName()
                 + "\", \""
